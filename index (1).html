@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Reading Guide</title>
+  <meta name="description" content="A small, curated guide to understanding AI — ask what you're curious about and get pointed to trustworthy reading." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="chat-widget.css" />
+  <style>
+    :root {
+      --ink: #182333;
+      --ink-soft: #45586b;
+      --paper: #f6f3ec;
+      --paper-dim: #e7e1d3;
+      --rule: #d8d0bc;
+      --gold: #ad8a3e;
+      --gold-dim: #8f7130;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .site-header {
+      padding: 32px 0 0;
+    }
+    .wordmark {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--ink-soft);
+    }
+
+    .hero {
+      padding: 56px 0 48px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .hero h1 {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-weight: 600;
+      font-size: clamp(32px, 5vw, 46px);
+      line-height: 1.18;
+      margin: 0 0 20px;
+      max-width: 16ch;
+    }
+    .hero .lede {
+      font-size: 17px;
+      color: var(--ink-soft);
+      max-width: 52ch;
+      margin: 0 0 28px;
+    }
+    .hero .cta {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 15px;
+      color: var(--ink);
+      border-top: 1px solid var(--gold);
+      padding-top: 10px;
+    }
+    .hero .cta strong {
+      font-weight: 600;
+      color: var(--gold-dim);
+    }
+
+    .catalog {
+      padding: 48px 0 8px;
+    }
+    .catalog h2 {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-weight: 600;
+      font-size: 22px;
+      margin: 0 0 6px;
+    }
+    .catalog .catalog-sub {
+      color: var(--ink-soft);
+      font-size: 14.5px;
+      margin: 0 0 28px;
+    }
+
+    .catalog-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      border-top: 1px solid var(--rule);
+    }
+    .catalog-list li {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 20px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .catalog-list .num {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 20px;
+      color: var(--gold-dim);
+      padding-top: 2px;
+    }
+    .catalog-list h3 {
+      font-size: 16.5px;
+      font-weight: 600;
+      margin: 0 0 6px;
+    }
+    .catalog-list p {
+      font-size: 14.5px;
+      color: var(--ink-soft);
+      margin: 0;
+      max-width: 54ch;
+    }
+
+    .site-footer {
+      padding: 40px 0 56px;
+      color: var(--ink-soft);
+      font-size: 13.5px;
+    }
+
+    @media (max-width: 520px) {
+      .hero { padding: 40px 0 36px; }
+      .catalog-list li { grid-template-columns: 28px 1fr; gap: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <div class="wordmark">AI Reading Guide</div>
+    </header>
+
+    <section class="hero">
+      <h1>Start on sturdy ground before you form an opinion about AI.</h1>
+      <p class="lede">
+        Ask what you're curious about, and get pointed to a handful of
+        trustworthy explainers — not a hundred search results.
+      </p>
+      <p class="cta"><strong>Open the chat</strong> in the corner to begin.</p>
+    </section>
+
+    <section class="catalog">
+      <h2>What's on the shelf</h2>
+      <p class="catalog-sub">A short list the guide draws from — ask about any of these, in English or Mandarin.</p>
+      <ul class="catalog-list">
+        <li>
+          <span class="num">I</span>
+          <div>
+            <h3>What is AI, really?</h3>
+            <p>A free intro course built for complete beginners — no coding required.</p>
+          </div>
+        </li>
+        <li>
+          <span class="num">II</span>
+          <div>
+            <h3>How do chatbots like this one work?</h3>
+            <p>A plain-language explainer on large language models, from Georgetown's CSET.</p>
+          </div>
+        </li>
+        <li>
+          <span class="num">III</span>
+          <div>
+            <h3>Is AI going to take my job?</h3>
+            <p>A quick, accessible take alongside a more rigorous economic analysis.</p>
+          </div>
+        </li>
+        <li>
+          <span class="num">IV</span>
+          <div>
+            <h3>AI ethics and bias, explained simply</h3>
+            <p>An educational glossary from the University of Texas at Austin.</p>
+          </div>
+        </li>
+        <li>
+          <span class="num">V</span>
+          <div>
+            <h3>How to use AI tools well</h3>
+            <p>Practical habits for getting better answers and knowing what to double-check.</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <footer class="site-footer">
+      <p>A small project exploring how to make AI easier to understand.</p>
+    </footer>
+  </div>
+
+  <!-- The widget mounts itself into this div. -->
+  <div id="ew-chat-widget"></div>
+  <script src="chat-widget.js"></script>
+</body>
+</html>
