@@ -28,6 +28,17 @@ const UPSTREAM_TIMEOUT_MS = 30_000;
 // setting on Render (Environment tab), no code change needed.
 const dailyLimit = Number(DAILY_LIMIT) || 200;
 
+// The widget tells us which language its window is set to. A short or ambiguous message
+// (like "AI") can't reveal the visitor's language, so for a Chinese window we ask for
+// Chinese by default. A clear English sentence still gets an English answer.
+const LANGUAGE_HINTS = {
+  zh:
+    "\n\nINTERFACE LANGUAGE: This visitor's chat window is set to Chinese (中文). " +
+    "Reply in Simplified Mandarin Chinese by default, including for short or ambiguous messages. " +
+    "Only reply in English if their latest message is clearly a full sentence written in English.",
+  en: "",
+};
+
 // The count lives in memory, so it also resets if the server restarts.
 // "Day" is the UTC day, which starts at 8:00 am Singapore time.
 let dayKey = "";
@@ -105,6 +116,9 @@ app.post("/chat", async (req, res) => {
     });
   }
 
+  const uiLang = req.body?.lang === "zh" ? "zh" : "en";
+  const systemPrompt = BUSINESS_CONTEXT + LANGUAGE_HINTS[uiLang];
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
 
@@ -120,7 +134,7 @@ app.post("/chat", async (req, res) => {
       body: JSON.stringify({
         model: ANTHROPIC_MODEL,
         max_tokens: MAX_OUTPUT_TOKENS,
-        system: BUSINESS_CONTEXT,
+        system: systemPrompt,
         messages,
       }),
     });
