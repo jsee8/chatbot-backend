@@ -9,6 +9,7 @@ const {
   ANTHROPIC_MODEL = "claude-sonnet-5",
   ALLOWED_ORIGINS = "",
   PORT = 3000,
+  DAILY_LIMIT = "200",
 } = process.env;
 
 if (!ANTHROPIC_API_KEY) {
@@ -16,9 +17,31 @@ if (!ANTHROPIC_API_KEY) {
   process.exit(1);
 }
 
-const MAX_MESSAGES = 20;      // history sent to the model per request
-const MAX_CHARS = 2000;       // per message
+// These limits keep each request cheap, so your prepaid credit lasts.
+const MAX_MESSAGES = 10;        // history sent to the model per request
+const MAX_USER_CHARS = 800;     // per visitor message (longer ones are trimmed)
+const MAX_REPLY_CHARS = 3000;   // per earlier bot reply kept in the history
+const MAX_OUTPUT_TOKENS = 500;  // cap on each reply
 const UPSTREAM_TIMEOUT_MS = 30_000;
+
+// Total chats allowed per day across ALL visitors. Change it by adding a DAILY_LIMIT
+// setting on Render (Environment tab), no code change needed.
+const dailyLimit = Number(DAILY_LIMIT) || 200;
+
+// The count lives in memory, so it also resets if the server restarts.
+// "Day" is the UTC day, which starts at 8:00 am Singapore time.
+let dayKey = "";
+let dayCount = 0;
+function overDailyLimit() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (today !== dayKey) {
+    dayKey = today;
+    dayCount = 0;
+  }
+  dayCount += 1;
+  if (dayCount === dailyLimit + 1) console.warn(`Daily limit of ${dailyLimit} chats reached.`);
+  return dayCount > dailyLimit;
+}
 
 const app = express();
 app.set("trust proxy", 1); // needed for correct client IPs behind Render/Railway/etc.
@@ -32,12 +55,12 @@ app.use(
   })
 );
 
-// 20 requests per minute per IP: enough for real chatting, tight enough to limit abuse.
+// 10 requests per minute per IP: enough for real chatting, tight enough to limit abuse.
 app.use(
   "/chat",
   rateLimit({
     windowMs: 60_000,
-    max: 20,
+    max: 10,
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: "Too many messages. Please wait a moment and try again." },
@@ -54,8 +77,9 @@ function validateMessages(input) {
   for (const m of input.slice(-MAX_MESSAGES)) {
     if (!m || (m.role !== "user" && m.role !== "assistant")) return null;
     if (typeof m.content !== "string" || !m.content.trim()) return null;
-    if (m.content.length > MAX_CHARS) return null;
-    cleaned.push({ role: m.role, content: m.content });
+    // Trim instead of rejecting, so one long paste can't break the rest of the chat.
+    const maxChars = m.role === "user" ? MAX_USER_CHARS : MAX_REPLY_CHARS;
+    cleaned.push({ role: m.role, content: m.content.slice(0, maxChars) });
   }
 
   // The API expects the conversation to start with a user turn
@@ -70,7 +94,14 @@ app.post("/chat", async (req, res) => {
   const messages = validateMessages(req.body?.messages);
   if (!messages) {
     return res.status(400).json({
-      error: `Invalid request. Send up to ${MAX_MESSAGES} messages of at most ${MAX_CHARS} characters, ending with a user message.`,
+      error: `Invalid request. Send up to ${MAX_MESSAGES} messages, ending with a user message.`,
+    });
+  }
+
+  if (overDailyLimit()) {
+    return res.status(429).json({
+      error:
+        "The guide has reached today's chat limit. Please come back tomorrow. 今日聊天次数已达上限，请明天再来。",
     });
   }
 
@@ -88,7 +119,7 @@ app.post("/chat", async (req, res) => {
       },
       body: JSON.stringify({
         model: ANTHROPIC_MODEL,
-        max_tokens: 600,
+        max_tokens: MAX_OUTPUT_TOKENS,
         system: BUSINESS_CONTEXT,
         messages,
       }),
